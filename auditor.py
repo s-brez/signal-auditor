@@ -1,29 +1,26 @@
 from web3 import Web3
 
 
-# number  scalar value equal to the number of ancestor blocks (genesis block=0)
-# size    size of the block in bytes
-# timestamp   Unix's time() at this block's inception
-# miner   160-bit address for fees collected from successful mining
-# gasLimit    maximum gas expenditure allowed in this block
-# gasUsed total gas used by all transactions in this block
-# transactions    list of transaction hashes included in the block
-# parentHash  Keccak256 hash of the parent block's header
-# hash    current block's hash
-# extraData   extra data in byte array
-
 class Auditor():
+    """ Auditor provides functionality to scrape a given ETH address for
+    transaction data matching Publisher signal formatting, as well as parsing
+    and displaying the signals in a human-readable format."""
 
-    # node connection url
-    ENDPOINT = "https://ropsten.infura.io/v3/c02db369ee524f88a410cbab6dc02dcf"
+    def __init__(self, endpoint, data, etherscan_api_token):
+        self.endpoint = endpoint
+        self.data = data
+        self.token = etherscan_api_token
 
-    def __init__(self):
+        # Connect to ETH node.
+        self.w3 = Web3(Web3.HTTPProvider(self.endpoint))
 
-        # create a connection to the endpoint
-        self.w3 = Web3(Web3.HTTPProvider(self.ENDPOINT))
+    def scrape_transactions(self, address):
+        """ Return a list of Publisher-formattted signal strings scraped from
+        a the given Ethereum public address. If the address's transactions
+        contain no signal strings, return False."""
+        pass
 
-        block = self.w3.eth.getBlock('latest')
-        print(block)
-
-
-auditor = Auditor()
+    def parse_signals(self, signals: list):
+        """Retunr a list of human-readable strings, given a list of Publisher
+        -encoded signals strings."""
+        pass
