@@ -52,4 +52,13 @@
         "Y": "Stop-Limit",
         "Z": "Stop-Market"},
     "misc": {
-        "P": "Post-only"}}}
+        "P": "Post-only"},
+    "trigger": {
+        "A": "Immediate",
+        "B": "Next 1 minute bar close",
+        "C": "Next 5 minute bar close",
+        "D": "Next 15 minute bar close",
+        "E": "Next 30 minute bar close",
+        "F": "Next 1 hour bar close",
+        "G": "Next 4 hour bar close",
+        "B": "Next 1 day bar close"}}}
