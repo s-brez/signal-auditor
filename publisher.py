@@ -1,4 +1,5 @@
 from web3 import Web3
+import json
 
 
 class Publisher():
@@ -20,20 +21,66 @@ class Publisher():
     def publish(self, signal_string):
         """ Send a transaction containing an encoded signal string in the
         transaction payload on the Ethereum blockchain, then print and return
-        the transaction hash. Note that the recipient of the transaction is
+        the transaction hash. Given string must be bytes (b'')
+
+        Note that the recipient of the transaction is
         ourself, our own public Eth address. This is because we use the
         blockchain only to immutably store a signal string, it doesnt actually
         matter to whom we transact, only that the transaction originates from
         our address for the sake of proving the signals are ours."""
 
+        # Create transaction
         signed_txn = self.w3.eth.account.signTransaction(dict(
             nonce=self.w3.eth.getTransactionCount(self.pub_k),
             gasPrice=self.w3.eth.gasPrice,
             gas=100000,
             to=self.pub_k,
-            value=12345,
+            value=5,
             data=signal_string),
             self.pvt_k)
 
-        tx_hash = self.w3.eth.sendRawTransaction(signed_txn.rawTransaction)
-        print(tx_hash)
+        # Execute transaction
+        return self.w3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()    
+
+    def encode(self, params: list):
+        """ Return an encoded byte string ready tp publish, given a list of
+        parameter strings. Parameters must match the data.json format else
+        raise an exception.
+
+        Prefix signal payloads with "SAE" (Signal Auditor Ethereum) as a header
+        so we can filter our signals from regular transactions later on."""
+
+        signal = "SAE"
+
+        # Check if each dict in data.json matches a param string
+        count = 0
+        for i in self.data['data']:
+
+            # If theres a match, append the dicts key to signal string
+            if params[count] in self.data['data'][i][self.key_from_value(
+                    self.data['data'][i], params[count])]:
+
+                signal = signal + self.key_from_value(
+                    self.data['data'][i],
+                    params[count])
+            else:
+                raise Exception("Signal parameter mis-match. Ensure input",
+                                "strings match each field in data.json.")
+
+            count += 1
+
+        # convert to bytes
+        signal = bytes(signal, 'utf-8')
+
+        return(signal)
+
+    def key_from_value(self, data_dict, val):
+        """Return the key where val matches a value from data_dict."""
+
+        key = None
+        try:
+            key = list(data_dict.keys())[list(data_dict.values()).index(val)]
+        except ValueError as e:
+            raise Exception("Signal parameter mis-match. Ensure input",
+                            "strings match each field in data.json", e)
+        return key
