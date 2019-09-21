@@ -19,7 +19,7 @@
     "inst_type": {
         "A": "Spot",
         "B": "Futures",
-        "C": "Perpetual Swap",
+        "C": "Perp-Swap",
         "D": "CFD",
         "E": "Option"},
     "exchange": {
@@ -56,10 +56,10 @@
         "N": "None"},
     "trigger": {
         "A": "Immediate",
-        "B": "Next 1 minute bar close",
-        "C": "Next 5 minute bar close",
-        "D": "Next 15 minute bar close",
-        "E": "Next 30 minute bar close",
-        "F": "Next 1 hour bar close",
-        "G": "Next 4 hour bar close",
-        "B": "Next 1 day bar close"}}}
+        "B": "1 min close",
+        "C": "5 min close",
+        "D": "15 min close",
+        "E": "30 min close",
+        "F": "1 hour close",
+        "G": "4 hour close",
+        "B": "1 day close"}}}
