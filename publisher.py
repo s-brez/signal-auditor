@@ -19,15 +19,15 @@ class Publisher():
         self.w3 = Web3(Web3.HTTPProvider(self.endpoint))
 
     def publish(self, signal_string):
-        """ Send a transaction containing an encoded signal string in the
-        transaction payload on the Ethereum blockchain, then print and return
-        the transaction hash. Given string must be bytes (b'')
+        """ Create a transaction containing an encoded signal string in the
+        transaction payload, write it to Eth blockchain, then print and return
+        the transaction hash. signal_string must be byte string (b'')
 
-        Note that the recipient of the transaction is
-        ourself, our own public Eth address. This is because we use the
-        blockchain only to immutably store a signal string, it doesnt actually
-        matter to whom we transact, only that the transaction originates from
-        our address for the sake of proving the signals are ours."""
+        Note that the recipient of the transaction is ourself; our own public
+        Eth address. Because we are only interested in the immutable signal
+        string, it doesnt actually matter to whom, or what amount of Ether we
+        transact, only that the transaction originates from our address for the
+        sake of proving the signals are ours."""
 
         # Create transaction
         signed_txn = self.w3.eth.account.signTransaction(dict(
@@ -35,38 +35,36 @@ class Publisher():
             gasPrice=self.w3.eth.gasPrice,
             gas=100000,
             to=self.pub_k,
-            value=5,
+            value=5,  # tiny tx value
             data=signal_string),
             self.pvt_k)
 
         # Execute transaction
-        return self.w3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()    
+        return self.w3.eth.sendRawTransaction(signed_txn.rawTransaction).hex()
 
     def encode(self, params: list):
-        """ Return an encoded byte string ready tp publish, given a list of
-        parameter strings. Parameters must match the data.json format else
-        raise an exception.
+        """ Return an encoded byte string ready to publish, given a list of
+        signal parameter strings. Parameters must match the data.json format,
+        otherwise raise an exception.
 
-        Prefix signal payloads with "SAE" (Signal Auditor Ethereum) as a header
-        so we can filter our signals from regular transactions later on."""
+        Prefix signal bytestring payloads with "SAE" (Signal Auditor Ethereum)
+        as a header as to filter signals from regular transactions easily."""
 
         signal = "SAE"
 
-        # Check if each dict in data.json matches a param string
+        # Check that each signal string param matches an entry in json.data.
         count = 0
         for i in self.data['data']:
-
-            # If theres a match, append the dicts key to signal string
+            # If theres a match, append the dicts key to the signal string.
+            # The keys of each dict are what will form the encoded signal.
             if params[count] in self.data['data'][i][self.key_from_value(
                     self.data['data'][i], params[count])]:
-
                 signal = signal + self.key_from_value(
                     self.data['data'][i],
                     params[count])
             else:
-                raise Exception("Signal parameter mis-match. Ensure input",
+                raise Exception("Signal parameter mis-match. Ensure input" +
                                 "strings match each field in data.json.")
-
             count += 1
 
         # convert to bytes
@@ -75,7 +73,7 @@ class Publisher():
         return(signal)
 
     def key_from_value(self, data_dict, val):
-        """Return the key where val matches a value from data_dict."""
+        """Return the key where val matches a value from the given dict."""
 
         key = None
         try:
