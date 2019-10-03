@@ -32,13 +32,25 @@ class Auditor():
         else:
             baseurl = "api-ropsten"
 
-        payload = (
+        payload = str(
             "http://" + baseurl + ".etherscan.io/api?module=account&action=" +
             "txlist&address=" + address + "&startblock=0&endblock=99999999&" +
             "sort=asc&apikey=" + self.token)
 
+        # Disguide our request as a browser, so etherscan doesnt block it.
+        # Sometimes servers block non=browser traffic
+        headers = {
+            'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3",  # noqa
+            'Accept-Encoding': "gzip, deflate",
+            'Accept-Language': "en-US,en;q=0.9",
+            'Cache-Control': "max-age=0",
+            'Connection': "keep=alive",
+            'Host': 'api-ropsten.etherscan.io',
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36"}  # noqa
+
         # Get all transactions pertaining to the specified address
-        response = requests.get(payload).json()
+        response = requests.get(payload, headers=headers).json()
 
         # Strip transaction msg payloads, converting from hex string to bytes.
         result = [
@@ -55,7 +67,7 @@ class Auditor():
 
         if(
             (bytes.fromhex(tx['input'][2:]).decode()[:3] == "SAE") and
-                # lower the address param as web3 returns lowercase addresses
+                # lowercase address param as web3 returns lowercase addresses
                 (tx['from'] == address.lower()) and (
                     len(bytes.fromhex(tx['input'][2:]).decode()) == 11)):
             return True

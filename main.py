@@ -97,8 +97,6 @@ class App(tk.Frame):
             self.output.size() + 1,
             "Published signal. Tx hash: " + str(txhash))
 
-        print(signal)
-
     def audit(self):
         """Scrape and audit tx's using address parameter from addr_field
         then print the results in the output pane."""
