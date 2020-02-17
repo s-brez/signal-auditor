@@ -13,6 +13,3 @@ Note that testnet Ropsten is used by default. To run on mainnet set LIVE flag to
 https://www.augur.net/
 
 https://erasure.io/
-
-## License
-This project is licensed under the MIT License.
