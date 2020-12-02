@@ -1,4 +1,4 @@
-# signal-auditor-ethereum
+# signal-auditor
 Trustlessly verify and publish trade signals on the Ethereum blockchain.
 
 ## Setup
